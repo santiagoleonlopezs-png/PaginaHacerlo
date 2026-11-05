@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SaberON | Laboratorio de Aprendizaje y Decisión</title>
+<meta name="theme-color" content="#080f20">
+<link rel="stylesheet" href="knowledge.css">
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--ink:#172033;--muted:#667085;--line:#e4e7ec;--accent:#3157d5;--ok:#16803c;--bad:#c93636}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.wrap{max-width:1050px;margin:auto;padding:24px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;margin:14px 0}
+h1,h2,h3,p{margin-top:0}.muted{color:var(--muted)}.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.between{justify-content:space-between}
+button,input{font:inherit}button{border:0;border-radius:12px;padding:12px 17px;font-weight:750;cursor:pointer;background:var(--accent);color:#fff;min-height:44px}
+button.secondary{background:#eef1f7;color:var(--ink)}button.danger{background:var(--bad)}button:disabled{opacity:.5;cursor:not-allowed}
+input{width:100%;padding:13px;border:1px solid var(--line);border-radius:11px;font-size:16px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hidden{display:none!important}.answer{background:#f7f8fb;color:var(--ink);border:1px solid var(--line);text-align:left;min-height:72px}.answer:hover{border-color:var(--accent)}
+.pill{padding:7px 11px;border:1px solid var(--line);border-radius:999px;font-size:13px}.big{font-size:36px;font-weight:850}.question{font-size:24px;font-weight:800;line-height:1.3}
+.bar{height:14px;background:#edf0f5;border-radius:99px;overflow:hidden}.bar>div{height:100%;background:var(--accent);transition:width .25s}
+.optbar{display:grid;grid-template-columns:34px 1fr 76px;gap:10px;align-items:center;margin:11px 0}.optbar .track{height:26px;background:#edf0f5;border-radius:8px;overflow:hidden}.optbar .fill{height:100%;background:#6577b8}
+.rankrow{display:grid;grid-template-columns:45px 1fr auto;gap:10px;padding:11px 4px;border-bottom:1px solid var(--line)}.correct{border:2px solid var(--ok)!important}.wrong{border:2px solid var(--bad)!important}
+.rankdetail{display:block;margin-top:4px}.answer.chosen{border:2px solid var(--accent);background:#eef2ff}.quiz-settings{background:#f7f9ff;border:1px solid #dce3f8;border-radius:14px;padding:16px;margin-top:16px}.quiz-settings label{display:block;font-size:14px;margin-bottom:6px}.quiz-settings input,.quiz-settings select{width:100%}.share-row{display:flex;gap:10px;margin-top:12px}.share-row input{min-width:0}.quiz-settings p:last-child{margin-bottom:0}
+@media(max-width:650px){.grid2{grid-template-columns:1fr}.question{font-size:20px}.wrap{padding:14px}}
+
+.qadmin{margin-top:14px}.qrow{border:1px solid var(--line);border-radius:12px;padding:12px;margin:8px 0;background:#fafbfc}
+.qrowhead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.qactions{display:flex;gap:6px;flex-wrap:wrap}
+.qactions button{padding:7px 10px;min-height:34px;font-size:13px}.mini{font-size:13px;color:var(--muted)}
+select,textarea{font:inherit}select{padding:11px;border:1px solid var(--line);border-radius:10px;background:#fff}
+textarea{resize:vertical}.adminGrid{display:grid;grid-template-columns:1fr auto;gap:10px}.resultTable{width:100%;border-collapse:collapse;font-size:14px}.resultTable th,.resultTable td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+@media(max-width:650px){.adminGrid{grid-template-columns:1fr}.qrowhead{display:block}.qactions{margin-top:10px}}
+</style>
+</head>
+<body class="play-view"><div style="position:relative;z-index:100;background:#070b13;border-bottom:1px solid #27334b;padding:14px 22px;font:13px system-ui;display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px"><a href="index.html#experiencias" style="color:#c2d5ff;text-decoration:none">← Volver al laboratorio</a><span style="color:#91a2bc">Laboratorio de Aprendizaje y Decisión</span></div>
+<div class="wrap">
+<section id="home" class="card">
+<div class="home-top"><div class="quiz-brand" role="img" aria-label="SaberON"><span aria-hidden="true">Saber</span><svg class="brand-power" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"><path d="M12 2v9"/><path d="M6.3 5.7a8.8 8.8 0 1 0 11.4 0"/></svg><span class="brand-n" aria-hidden="true">N</span></div><button id="goHost" type="button"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V6a4 4 0 0 1 8 0v4"/></svg>Facilitador</button></div>
+<div class="home-layout"><div><span class="home-eyebrow">El conocimiento entra en juego</span><h1>Pon a prueba<br>lo que <span class="home-emphasis">sabes.</span></h1><p class="home-copy">Cada pregunta es una oportunidad para pensar, decidir y aprender. Entra a tu sala y acepta el reto.</p><div class="home-cta"><button id="goPlayer" type="button">Entrar al quiz <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg></button></div><button id="resumeQuiz" class="secondary home-resume hidden" type="button">Continuar mi quiz →</button><p id="homeMsg" class="home-status" role="status"></p></div><div class="challenge-art" aria-hidden="true"><div class="art-orbit"><span class="art-spark"></span></div><div class="art-tile">?</div><div class="art-badge first"><i>✓</i><div><strong>Conecta ideas</strong><small>Lo que sabes, en acción</small></div></div><div class="art-badge second"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 17 6-6 4 4 8-10M15 5h6v6"/></svg></i><div><strong>Supera el reto</strong><small>Precisión + rapidez</small></div></div><span class="art-caption">Piensa · decide · aprende</span></div></div>
+<div class="home-steps"><div class="home-step"><span>01</span><div><b>Entra a tu sala</b><p>Con tu enlace o código.</p></div></div><div class="home-step"><span>02</span><div><b>Responde el reto</b><p>Cada decisión cuenta.</p></div></div><div class="home-step"><span>03</span><div><b>Descubre tu resultado</b><p>Aprende en cada pregunta.</p></div></div></div>
+</section>
+
+<section id="playerJoin" class="card hidden">
+<span class="join-kicker">Tu próximo reto</span><h2 style="margin-top:12px">Entra en juego</h2><p class="muted">Un paso más y comienza el desafío.</p>
+<div id="joinRoomSummary" class="join-room hidden" role="status"></div>
+<div id="roomCodeField"><label for="roomCode">Código de sala</label><input id="roomCode" maxlength="80" autocomplete="off" placeholder="Escribe el código de tu sala"><p id="roomLookupMsg" class="mini" role="status"></p></div>
+<div id="identityField" class="hidden"><label id="playerIdentityLabel" for="playerName">Nombre</label><input id="playerName" maxlength="30" placeholder="Tu nombre" autocomplete="name" aria-describedby="identityHint joinMsg"><p id="identityHint" class="mini setting-help">Ingresa el nombre con el que responderás el quiz.</p></div>
+<div class="row" style="margin-top:14px"><button id="joinBtn">Entrar</button><button class="secondary back">Volver</button></div>
+<p id="joinMsg" style="margin-top:12px" role="alert"></p>
+</section>
+
+<section id="hostLogin" class="card hidden">
+<h2>Facilitador</h2><p>Ingresa con tu cuenta autorizada de Firebase. El acceso requiere el rol de facilitador.</p><label>Correo electrónico</label><input id="hostEmail" type="email" autocomplete="username" placeholder="docente@institucion.edu"><label>Contraseña</label><input id="hostPass" type="password" autocomplete="current-password" placeholder="Contraseña de tu cuenta">
+<div class="row" style="margin-top:14px"><button id="hostBtn">Entrar al panel</button><button class="secondary back">Volver</button></div>
+<p id="hostMsg" class="muted" style="margin-top:12px"></p>
+</section>
+
+<section id="roomManager" class="card hidden">
+<h2>Mis salas</h2><p class="muted">El nombre de la clase será el código de acceso de los participantes.</p>
+<label>Nombre de la clase / código de sala</label><input id="className" maxlength="80" placeholder="Ej.: Legislación Laboral">
+<div class="quiz-settings grid2"><div><label for="newQuizMode">Modalidad de la nueva partida</label><select id="newQuizMode"><option value="facilitated">Dirigida por el facilitador</option><option value="self_paced">Autónoma: compartir instrumento</option></select></div><div id="newQuestionDurationField"><label for="newQuestionDuration">Tiempo máximo por pregunta (segundos)</label><input id="newQuestionDuration" type="number" min="5" max="600" step="1" value="60"></div><p id="newSelfPacedInfo" class="mini hidden">La modalidad autónoma no tiene límite de tiempo. La espera entre preguntas cuenta para los puntos por rapidez.</p></div>
+<div class="quiz-settings grid2"><div><label for="newRankingVisibility">Ranking para participantes</label><select id="newRankingVisibility"><option value="live">Durante el quiz y al finalizar</option><option value="final">Solo al finalizar</option><option value="hidden">No mostrar</option></select></div><div><label for="newParticipantIdentity">Dato para ingresar</label><select id="newParticipantIdentity"><option value="name">Nombre</option><option value="cedula">Cédula: solo números</option></select></div></div>
+<div class="row" style="margin-top:12px"><button id="createRoom">Crear sala / nueva partida</button><button id="reopenRoom" class="secondary">Reabrir sala</button><button id="roomBack" class="secondary">Volver</button></div>
+<p id="roomManagerMsg" class="muted" role="status" aria-live="polite"></p><h3>Salas creadas</h3><div id="roomHistory"></div>
+</section>
+<section id="waiting" class="card hidden">
+<h2 id="welcome">¡Listo!</h2><p id="waitText">Espera a que el facilitador abra la pregunta.</p>
+<div class="big" id="waitScore">0 pts</div><div id="connStatus" class="muted">🟢 Conectado</div>
+<button type="button" class="secondary back" style="margin-top:12px">Volver al inicio</button>
+<div id="playerRankingBox" class="card hidden" style="margin-top:18px;text-align:left">
+<h3>🏆 Ranking</h3><div id="playerRanking"></div>
+</div>
+</section>
+
+<section id="playerGame" class="hidden">
+<div class="row between"><span id="pNum" class="pill"></span><span id="pTimer" class="big">60</span><button type="button" class="secondary back">Volver al inicio</button></div>
+<div id="pTimeBarBox" class="bar"><div id="pTimeBar" style="width:100%"></div></div>
+<div class="card"><div id="pQuestion" class="question"></div><div id="pAnswers" class="grid2" style="margin-top:18px"></div><p id="pMsg" role="status" style="margin-top:15px"></p><button id="selfRetry" class="secondary hidden" type="button">Reintentar guardar respuesta</button><div id="selfAfterAnswer" class="hidden"><button id="nextSelfQuestion" type="button">Siguiente pregunta</button><p class="mini" style="margin-top:10px">La espera antes de abrir la siguiente pregunta también cuenta para tu puntaje por rapidez.</p></div><details id="selfLiveRankingBox" class="ranking-card hidden"><summary>Ver ranking en vivo</summary><div id="selfLiveRanking"></div></details></div>
+<details id="directedRankingBox" class="card ranking-card hidden"><summary>Ver ranking en vivo</summary><div id="directedRanking"></div></details>
+</section>
+
+<section id="selfIntro" class="card hidden">
+<span class="pill">Modalidad autónoma</span><h2 id="selfIntroTitle" style="margin-top:18px">Quiz autónomo</h2><p id="selfIntroInfo"></p><p id="selfIntroStatus" class="muted" role="status"></p><div class="row"><button id="startSelfQuiz" type="button">Comenzar quiz</button><button type="button" class="secondary back">Volver al inicio</button><button id="selfIntroRetry" class="secondary hidden" type="button">Reintentar guardar</button></div>
+</section>
+<section id="selfResults" class="card hidden">
+<span class="join-kicker">Reto completado</span><h2 style="margin-top:14px">¡Lo lograste!</h2><div id="selfFinalScore" class="big"></div><p id="selfFinalAccuracy" style="margin-top:10px"></p><p id="selfFinalNote" class="muted" role="status"></p><div id="selfFinalRankingBox" class="ranking-card hidden"><p id="selfFinalPosition" class="muted" role="status"></p><h3>Ranking</h3><div id="selfFinalRanking"></div></div><button class="secondary back" style="margin-top:18px">Volver al inicio</button>
+</section>
+
+<section id="hostPanel" class="hidden">
+<div class="card">
+<div class="row" style="margin-bottom:14px"><button id="manageQuizRooms" class="secondary" type="button">← Mis salas / nueva partida</button></div>
+<div class="row between"><div><h2 style="margin-bottom:4px">Panel del facilitador</h2><span class="muted">Sala <b id="hostRoom">GC2026</b> · Estado: <b id="phaseLabel">En espera</b></span></div><div><span class="pill">Inscritos: <b id="connected">0</b></span> <span class="pill"><span id="answeredLabel">Respondieron</span>: <b id="answered">0</b></span></div></div>
+<div id="quizSettings" class="quiz-settings"><div class="grid2"><div><label for="quizMode">Modalidad</label><select id="quizMode"><option value="facilitated">Dirigida por el facilitador</option><option value="self_paced">Autónoma: compartir instrumento</option></select></div><div id="questionDurationField"><label for="questionDuration">Tiempo máximo por pregunta (segundos)</label><input id="questionDuration" type="number" min="5" max="600" step="1" value="60"></div></div><button id="saveQuizSettings" class="secondary" type="button" style="margin-top:12px">Guardar configuración</button><p id="quizModeInfo" class="mini" style="margin-top:12px"></p></div>
+<div id="participantSettings" class="quiz-settings access-settings"><h3>Experiencia de participantes</h3><div class="grid2"><div><label for="rankingVisibility">Mostrar ranking</label><select id="rankingVisibility"><option value="live">Durante el quiz y al finalizar</option><option value="final">Solo al finalizar</option><option value="hidden">No mostrar</option></select></div><div><label for="participantIdentity">Dato para ingresar</label><select id="participantIdentity"><option value="name">Nombre</option><option value="cedula">Cédula: solo números</option></select></div></div><p id="participantSettingsInfo" class="mini setting-help">Tú siempre podrás consultar el ranking en este panel.</p><button id="saveParticipantSettings" class="secondary" type="button" style="margin-top:12px">Guardar opciones de participantes</button><p id="participantSettingsMsg" class="mini setting-help" role="status"></p></div>
+<div id="selfHostControls" class="quiz-settings hidden"><h3>Instrumento autónomo</h3><p id="selfHostStatus" class="muted"></p><div class="row"><button id="publishSelfQuiz" type="button">Habilitar instrumento</button><button id="closeSelfQuiz" class="secondary" type="button">Cerrar instrumento</button></div></div>
+<div id="quizShareControls" class="quiz-settings"><h3>Comparte el acceso a esta sala</h3><p class="mini">El enlace ya incluye la sala. La persona solo deberá ingresar su nombre o cédula, según tu configuración.</p><div class="share-row"><input id="quizShareLink" type="text" readonly aria-label="Enlace de la sala"><button id="copyQuizLink" class="secondary" type="button">Copiar enlace</button></div><p id="quizShareMsg" class="mini" role="status"></p></div>
+<div id="facilitatedControls" class="row" style="margin-top:16px"><button id="openQ">Abrir pregunta</button><button id="closeQ" class="secondary">Cerrar respuestas</button><button id="revealQ" class="secondary">Mostrar resultados</button><button id="nextQ">Siguiente pregunta</button></div>
+<div id="hostError" role="alert" style="display:none;margin-top:12px;padding:12px;border-radius:10px;background:#fff1f1;color:#9a1b1b"></div><div class="row" style="margin-top:10px"><button id="resetGame" class="danger">Reiniciar partida</button><button id="clearPlayers" class="secondary">Eliminar participantes</button><button id="toggleEditor" class="secondary" type="button">Banco de preguntas ↓</button></div>
+<details id="questionPicker" class="card" style="margin-top:18px">
+<summary style="cursor:pointer;font-weight:800">🎯 Elegir preguntas y orden de presentación</summary>
+<p class="muted">Marca las preguntas que deseas utilizar y aplica la selección. En la modalidad dirigida también puedes presentar una pregunta específica.</p>
+<div class="row"><button type="button" id="pickAll" class="secondary">Seleccionar todas</button><button type="button" id="pickNone" class="secondary">Deseleccionar todas</button><button type="button" id="applySelection">Aplicar selección</button></div>
+<div id="pickerStatus" class="muted" style="margin:10px 0"></div><div id="pickerList"></div>
+</details>
+<details id="questionEditor" class="card" style="margin-top:18px">
+  <summary style="cursor:pointer;font-weight:800">Editar / reemplazar preguntas</summary>
+  <p class="muted" style="margin-top:12px">Puedes cargar las preguntas actuales, editarlas y guardarlas. También puedes pegar varias desde Excel.</p>
+  <p class="muted"><b>Formato:</b> Pregunta [TAB] A [TAB] B [TAB] C [TAB] D [TAB] Correcta. En “Correcta” escribe A, B, C o D.</p>
+  
+  <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+  <h3>Administrar bancos</h3>
+  <div class="row">
+    <select id="bankSelect"><option value="agilismo">Agilismo</option></select>
+    <button id="newBank" class="secondary" type="button">+ Nuevo banco</button>
+    <button id="renameBank" class="secondary" type="button">Renombrar</button>
+    <button id="deleteBank" class="danger" type="button">Eliminar banco</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button id="addQuestion" type="button">+ Nueva pregunta</button>
+    <button id="exportBank" class="secondary" type="button">Exportar CSV</button>
+  </div>
+  <div id="questionList" class="qadmin"></div>
+
+  <div id="singleEditor" class="card hidden" style="margin-top:14px">
+    <h3 id="singleEditorTitle">Nueva pregunta</h3>
+    <label>Pregunta</label><textarea id="editQuestion" style="width:100%;min-height:90px;padding:10px;border:1px solid var(--line);border-radius:10px"></textarea>
+    <div class="grid2" style="margin-top:10px">
+      <div><label>Opción A</label><input id="editA"></div><div><label>Opción B</label><input id="editB"></div>
+      <div><label>Opción C</label><input id="editC"></div><div><label>Opción D</label><input id="editD"></div>
+    </div>
+    <label style="display:block;margin-top:10px">Respuesta correcta</label>
+    <select id="editCorrect"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select>
+    <div class="row" style="margin-top:12px"><button id="saveSingle" type="button">Guardar pregunta</button><button id="cancelSingle" class="secondary" type="button">Cancelar</button></div>
+  </div>
+
+  <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+  <h3>Importación masiva</h3>
+<div class="row" style="margin-bottom:10px">
+  <button id="chooseQuestionFile" class="secondary" type="button">📂 Importar archivo CSV / TSV / TXT</button>
+  <input id="questionFile" type="file" accept=".csv,.tsv,.txt" class="hidden">
+</div>
+<textarea id="bulkQuestions" style="width:100%;min-height:280px;padding:12px;border:1px solid var(--line);border-radius:12px;font:inherit" placeholder="Pregunta 1[TAB]Opción A[TAB]Opción B[TAB]Opción C[TAB]Opción D[TAB]B"></textarea>
+  <div class="row" style="margin-top:10px">
+    <button id="loadCurrent" class="secondary" type="button">Cargar preguntas actuales</button>
+    <button id="saveQuestions" type="button">Guardar cambios</button>
+  </div>
+  <p id="editorMsg" class="muted" style="margin-top:10px"></p>
+</details>
+</div>
+<div id="hostQuestionCard" class="card"><div class="row between"><span id="hNum" class="pill">Pregunta 1 / 20</span><span id="hTimer" class="big">60</span></div><h3 id="hQuestion" class="question" style="margin-top:18px"></h3><div id="hOptions"></div></div>
+<div class="grid2">
+<div class="card"><h3 id="responseTitle">Respuestas en vivo</h3><div id="distribution"></div>
+<div id="responseDetails" style="margin-top:18px"></div>
+</div>
+<div class="card"><h3>🏆 Ranking</h3><div id="ranking"></div></div>
+</div>
+</section>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, onSnapshot, serverTimestamp, writeBatch, getDocs, runTransaction } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import {getAuth, signInWithEmailAndPassword, getIdTokenResult} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {isSelfPaced, questionSeconds, questionOrder, evaluateAnswer, selfPacedRanking, rankingVisibility, participantIdentity, identityError, participantLabel, canShowParticipantRanking} from './quiz-engine.mjs';
+import {createSelfPacedQuiz} from './quiz-autonomo.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBnHTbmdSPWjYKTiLjv7HPKkqzpD4SOmJY",
+  authDomain: "simuladores-juegos.firebaseapp.com",
+  projectId: "simuladores-juegos",
+  storageBucket: "simuladores-juegos.appspot.com"
+};
+const app=initializeApp(firebaseConfig), db=getFirestore(app), facilitatorAuth=getAuth(app);
+const ROOT="gc_quiz_live", DEFAULT_ROOM="GC2026";
+const BANKS="gc_quiz_banks";
+let currentBankId="agilismo", banks=[], editingIndex=null;
+let Q=[
+["Seguridad psicológica","Un equipo realiza sesiones de lecciones aprendidas después de cada proyecto. Sin embargo, los integrantes comparten principalmente los logros y evitan hablar de errores. ¿Qué condición parece estar limitando más la gestión del conocimiento?",["La capacidad para almacenar conocimiento explícito.","La seguridad psicológica para compartir conocimiento relevante.","La metodología utilizada para documentar aprendizajes.","La frecuencia con la que se realizan las sesiones."],1],
+["Bitácoras de aprendizaje","Un estudiante registra después de cada clase qué aprendió, qué cambió frente a lo que pensaba y cómo podría utilizarlo en su trabajo. ¿Qué función cumple principalmente esta práctica?",["Convertir la experiencia en aprendizaje consciente.","Organizar cronológicamente los contenidos estudiados.","Construir un repositorio personal de información.","Evidenciar el cumplimiento de las actividades académicas."],0],
+["Mapa de conocimiento personal","Una profesional identifica que domina análisis de datos, posee conocimientos básicos de IA y suele recurrir a dos compañeros cuando enfrenta problemas de automatización. ¿Qué aporta un mapa de conocimiento personal?",["Establecer los conocimientos exigidos por su cargo.","Determinar cuáles conocimientos debe certificar.","Representar lo que sabe y las fuentes a las que puede recurrir.","Comparar sus conocimientos con los de otros profesionales."],2],
+["Mercado del conocimiento","En una organización, un analista necesita resolver un problema que nunca ha enfrentado. Sabe que alguien de otra área ya resolvió algo similar, pero desconoce quién. Desde la perspectiva del mercado del conocimiento, el principal problema es:",["La ausencia de conocimiento explícito.","La falta de incentivos económicos para compartir.","La baja capacidad de almacenamiento organizacional.","La dificultad para conectar demanda y oferta de conocimiento."],3],
+["Etología y gestión del conocimiento","Una colonia de hormigas encuentra una nueva fuente de alimento y progresivamente otras hormigas comienzan a utilizar una ruta eficiente para llegar a ella. Desde gestión del conocimiento, este comportamiento evidencia principalmente:",["Distribución y circulación de conocimiento colectivo.","Especialización funcional de los individuos.","Conversión de conocimiento tácito en explícito.","Centralización de información crítica."],0],
+["Criticidad del conocimiento","Una colonia humana en Marte debe decidir qué conocimientos proteger primero ante una reducción crítica de su capacidad de almacenamiento. ¿Cuál criterio sería más adecuado?",["La cantidad de personas que utilizan cada conocimiento.","Su impacto, dificultad de recuperación y riesgo de pérdida.","La antigüedad y frecuencia de actualización del conocimiento.","El volumen de información disponible sobre cada tema."],1],
+["Pirámide del conocimiento","Un tablero muestra que las reclamaciones aumentaron 18 % durante tres meses. El equipo analiza los casos y descubre que el incremento se concentra en clientes que utilizan un nuevo canal. ¿Dónde ocurre principalmente el paso de información a conocimiento?",["Al registrar cada reclamación recibida.","Al calcular el incremento porcentual.","Al identificar la relación con el nuevo canal.","Al presentar los resultados en un tablero."],2],
+["Criticidad y categorización","Una empresa identifica cuatro conocimientos. ¿Cuál debería recibir mayor prioridad desde la perspectiva del riesgo de conocimiento?",["Uno frecuente, dominado por numerosos colaboradores.","Uno estratégico, documentado y compartido entre especialistas.","Uno especializado, disponible también mediante proveedores externos.","Uno crítico para operar, poco documentado y dominado por una persona."],3],
+["Estrategia del conocimiento","Una empresa identifica que su estrategia futura dependerá fuertemente de analítica avanzada, pero actualmente posee muy pocas capacidades internas en ese campo. ¿Cuál debería ser su primera decisión de gestión del conocimiento?",["Definir la brecha entre el conocimiento requerido y el disponible.","Construir un repositorio especializado en analítica.","Crear comunidades de práctica entre todas las áreas.","Contratar una plataforma para almacenar conocimiento."],0],
+["Flujos y redes de conocimiento","En un mapa de conocimiento se descubre que Laura es consultada constantemente por personas de cinco áreas, aunque no ocupa una posición de liderazgo formal. ¿Cuál interpretación está mejor sustentada?",["Laura posee el conocimiento de mayor criticidad de la empresa.","Laura presenta una elevada centralidad en la red de conocimiento.","La organización debería formalizar a Laura como líder del proceso.","Existe necesariamente una dependencia organizacional de Laura."],1],
+["GC en gestión del cambio","Una empresa implementará un nuevo modelo comercial. Los colaboradores comprenden por qué es necesario y manifiestan disposición para adoptarlo, pero todavía no saben ejecutar los nuevos procesos. ¿Dónde debería concentrarse la gestión del conocimiento?",["En fortalecer la narrativa estratégica del cambio.","En aumentar los espacios de participación.","En desarrollar y transferir el conocimiento requerido.","En sistematizar las lecciones aprendidas del proceso."],2],
+["Ciencias del comportamiento","Una organización creó una plataforma para compartir buenas prácticas. Los colaboradores reconocen su utilidad y saben utilizarla, pero casi nunca publican porque el proceso exige demasiados pasos. ¿Cuál intervención sería más coherente desde ciencias del comportamiento?",["Crear una campaña sobre los beneficios de compartir.","Capacitar nuevamente sobre el uso de la plataforma.","Incorporar reconocimientos para quienes publiquen más.","Reducir la fricción del proceso de publicación."],3],
+["Lecciones aprendidas","Un proyecto termina con resultados inferiores a los esperados. ¿Cuál pregunta produciría una lección aprendida más útil para proyectos futuros?",["¿Qué ocurrió, por qué ocurrió y qué haríamos diferente?","¿Quién tomó las decisiones que generaron el resultado?","¿Cuáles actividades del cronograma no se cumplieron?","¿Qué integrantes tuvieron mejor desempeño?"],0],
+["Transferencia de conocimiento tácito","Un experto se retirará en seis meses. Existen manuales detallados de sus procesos, pero buena parte de su experiencia consiste en reconocer excepciones y decidir frente a situaciones poco frecuentes. ¿Qué estrategia sería más adecuada?",["Actualizar los procedimientos existentes.","Implementar acompañamiento experto-aprendiz en situaciones reales.","Realizar entrevistas para ampliar los documentos disponibles.","Construir una biblioteca con casos históricos del proceso."],1],
+["Gestión del conocimiento con IA / RAG","Una organización quiere crear un agente que responda preguntas sobre procedimientos internos y fundamente sus respuestas en documentos institucionales actualizados. ¿Qué alternativa responde mejor a esa necesidad?",["Entrenar un modelo únicamente con información histórica.","Crear una biblioteca digital con búsqueda semántica.","Implementar RAG conectado a las fuentes internas pertinentes.","Diseñar prompts especializados para cada procedimiento."],2],
+["Open Space","Una organización reúne a 60 personas de diferentes áreas para explorar problemas emergentes sobre los cuales todavía no existe una agenda clara. ¿Por qué Open Space podría ser apropiado?",["Permite organizar previamente los temas según su prioridad estratégica.","Facilita que expertos asignados lideren cada conversación.","Permite desarrollar simultáneamente un plan formal de capacitación.","Hace posible que los participantes movilicen conversaciones relevantes."],3],
+["Consultoría / ADDIE","Un consultor recibe la solicitud: “Necesitamos una capacitación para que nuestros equipos compartan más conocimiento”. Antes de diseñarla, ¿qué debería hacer siguiendo la lógica de ADDIE?",["Analizar la necesidad y determinar qué explica la brecha actual.","Diseñar las actividades que generen mayor participación.","Desarrollar contenidos sobre transferencia de conocimiento.","Definir indicadores para evaluar la capacitación."],0],
+["Indicadores de gestión del conocimiento","Una plataforma registra 3.000 documentos, 800 usuarios activos y 12.000 consultas. ¿Qué información adicional permitiría evaluar mejor si está generando valor?",["El crecimiento mensual de documentos almacenados.","La relación entre el conocimiento utilizado y mejoras en el desempeño.","El promedio de consultas realizadas por cada usuario.","El porcentaje de colaboradores registrados en la plataforma."],1],
+["GC transfuncional","Dos áreas dependen entre sí para atender al cliente. Ambas tienen buena documentación interna, pero los errores aparecen principalmente cuando un caso pasa de una a otra. ¿Dónde debería concentrarse inicialmente la intervención?",["En aumentar la documentación de cada área.","En identificar nuevos conocimientos críticos.","En fortalecer la transferencia de conocimiento en las interfaces.","En crear repositorios independientes para cada proceso."],2],
+["Ecosistemas inteligentes","Una organización integra expertos, comunidades de práctica, repositorios, agentes de IA, mecanismos de captura y analítica sobre el uso del conocimiento. ¿Qué característica permitiría hablar con mayor propiedad de un ecosistema inteligente de conocimiento?",["Que todos los componentes utilicen una plataforma común.","Que la mayor parte del conocimiento esté digitalizado.","Que la IA participe en los procesos de búsqueda y creación.","Que personas, procesos y tecnología se conecten para aprender y actuar."],3]
+];
+const $=id=>document.getElementById(id), screens=["home","playerJoin","hostLogin","waiting","playerGame","hostPanel","roomManager","selfIntro","selfResults"];
+function show(id){screens.forEach(x=>$(x).classList.toggle("hidden",x!==id));document.body?.classList.toggle('play-view',!['hostLogin','hostPanel','roomManager'].includes(id));}
+function detachPlayer(){navigationEpoch++;if(playerUnsub){playerUnsub();playerUnsub=null;}selfPaced.stop();clearInterval(tick);}
+function leaveRemovedRoom(){const previous=room;detachPlayer();if(loadSession()?.room===previous){localStorage.removeItem(SESSION_KEY);$("resumeQuiz").classList.add('hidden');}$("homeMsg").textContent='Esta sala ya no está disponible. Puedes ingresar a otra sala o entrar como facilitador.';show('home');}
+document.querySelectorAll(".back").forEach(b=>b.onclick=()=>{detachPlayer();show("home");});
+$("goPlayer").onclick=()=>{detachPlayer();show("playerJoin");if(inviteRunId||$("roomCode").value)loadJoinRoom();}; $("goHost").onclick=()=>{detachPlayer();show("hostLogin");};
+let classAlias="", room=DEFAULT_ROOM, playerId="", playerName="", hostUnsubs=[], playerUnsub=null, tick=null, state=null, players=[], navigationEpoch=0;
+const SESSION_KEY="gc_quiz_session_v7";
+const inviteRunId=new URLSearchParams(location.search).get('partida')||'';
+let joinRun=null,joinLookup=0,joinBusy=false,roomDeletionBusy=false;
+const normalizeRoom=s=>String(s||"").trim().normalize("NFC").replace(/\s+/g," ").toLocaleUpperCase("es");
+const aliasRef=name=>doc(db,ROOT,normalizeRoom(name));
+const normalizeName=s=>String(s||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ");
+async function cedulaKey(value){const bytes=new TextEncoder().encode(room+':'+value);const hash=await crypto.subtle.digest('SHA-256',bytes);return Array.from(new Uint8Array(hash),b=>b.toString(16).padStart(2,'0')).join('');}
+const saveSession=()=>{localStorage.setItem(SESSION_KEY,JSON.stringify({room,playerId,playerName}));$("resumeQuiz").classList.remove('hidden');};
+const loadSession=()=>{try{return JSON.parse(localStorage.getItem(SESSION_KEY)||"null")}catch{return null}};
+function configureIdentity(run){
+ joinRun=run;const cedula=participantIdentity(run)==='cedula',input=$("playerName");
+ $("identityField").classList.remove('hidden');$("playerIdentityLabel").textContent=cedula?'Cédula':'Nombre';
+ input.placeholder=cedula?'Ej.: 1020304050':'Tu nombre';input.inputMode=cedula?'numeric':'text';input.autocomplete=cedula?'off':'name';input.pattern=cedula?'[0-9]+':'.*\\S.*';
+ $("identityHint").textContent=cedula?'Solo números. No se aceptan puntos, espacios ni otros caracteres.':'Ingresa el nombre con el que responderás el quiz.';
+ input.setAttribute('aria-invalid','false');$("joinMsg").textContent='';$("joinBtn").disabled=false;
+}
+async function loadJoinRoom(){
+ const request=++joinLookup;$("joinBtn").disabled=true;$("joinMsg").textContent='';
+ $("roomLookupMsg").textContent='Buscando sala…';
+ try{
+  let id=inviteRunId;
+  if(id&&!/^partida-[a-zA-Z0-9-]{1,100}$/.test(id))throw Error('El enlace no es válido.');
+  if(!id){const code=normalizeRoom($("roomCode").value);if(!code)throw Error('Escribe el código de tu sala.');const alias=await getDoc(aliasRef(code));if(!alias.exists()||!alias.data().activeRun)throw Error('No hay una sala activa con ese código.');id=alias.data().activeRun;}
+  const snap=await getDoc(doc(db,ROOT,id));if(request!==joinLookup)return;
+  if(!snap.exists()||snap.data().recordType!=='run')throw Error('Esta sala ya no está disponible.');
+  if(snap.data().deleting)throw Error('Esta sala se está eliminando y ya no recibe participantes.');
+  configureIdentity(snap.data());$("roomLookupMsg").textContent='Sala encontrada.';
+  $("joinRoomSummary").textContent='Sala · '+(joinRun.className||'Quiz');$("joinRoomSummary").classList.remove('hidden');
+  if(inviteRunId){$("roomCode").value=joinRun.className||'Quiz';$("roomCodeField").classList.add('hidden');$("homeMsg").textContent='Tu sala está lista: '+(joinRun.className||'Quiz')+'.';}
+ }catch(e){if(request!==joinLookup)return;joinRun=null;$("identityField").classList.add('hidden');$("joinRoomSummary").classList.add('hidden');$("roomLookupMsg").textContent='';$("joinMsg").textContent=e.message;$("joinBtn").disabled=true;}
+}
+$("roomCode").oninput=()=>{joinLookup++;joinRun=null;$("identityField").classList.add('hidden');$("joinRoomSummary").classList.add('hidden');$("joinMsg").textContent='';$("roomLookupMsg").textContent='';$("joinBtn").disabled=true;};
+$("roomCode").onchange=loadJoinRoom;
+$("roomCode").onblur=()=>{if(!joinRun&&$("roomCode").value)return loadJoinRoom();};
+$("roomCode").onkeydown=async e=>{if(e.key==='Enter'){e.preventDefault();await loadJoinRoom();if(joinRun)$("playerName").focus();}};
+$("playerName").oninput=()=>{const error=identityError($("playerName").value,participantIdentity(joinRun));$("playerName").setAttribute('aria-invalid',error?'true':'false');$("joinMsg").textContent=error;$("joinBtn").disabled=!!error||!joinRun;};
+$("playerName").onkeydown=e=>{if(e.key==='Enter'&&!$("joinBtn").disabled){e.preventDefault();$("joinBtn").click();}};
+$("resumeQuiz").onclick=async()=>{
+ detachPlayer();const epoch=navigationEpoch;
+ try{const saved=loadSession(),restored=saved&&await restoreSession(saved);if(epoch!==navigationEpoch)return;if(!restored){$("homeMsg").textContent='La sesión anterior ya no está disponible. Puedes ingresar de nuevo o entrar como facilitador.';show('home');}}
+ catch(e){if(epoch!==navigationEpoch)return;$("homeMsg").textContent='No se pudo recuperar la sesión. Puedes ingresar de nuevo o entrar como facilitador.';show('home');}
+};
+async function touchPresence(online=true){if(!room||!playerId)return;try{await updateDoc(pRef(playerId),{online,lastSeen:serverTimestamp()})}catch{}}
+async function restoreSession(s){
+ const epoch=navigationEpoch;
+ if(!s?.room||!s?.playerId)return false;
+ const old=await getDoc(doc(db,ROOT,s.room));
+ if(!old.exists()||old.data().recordType!=="run"||old.data().deleting)return false;
+ if(inviteRunId && inviteRunId!==s.room)return false;
+ if(!inviteRunId&&!isSelfPaced(old.data())){const a=await getDoc(aliasRef(old.data().className||""));if(!a.exists()||a.data().activeRun!==s.room)return false;}
+ if(epoch!==navigationEpoch)return true;room=s.room;playerId=s.playerId;playerName=s.playerName||"";
+ const ps=await getDoc(pRef(playerId));if(!ps.exists())return false;if(epoch!==navigationEpoch)return true;playerName=ps.data().name||playerName;saveSession();
+ $("welcome").textContent="¡Bienvenido de nuevo, "+participantLabel(ps.data())+"!";show("waiting");await touchPresence(true);if(epoch===navigationEpoch)listenPlayer();return true;
+}
+async function recoverOrJoin(name,code){
+ const epoch=navigationEpoch;
+ const codeName=normalizeRoom(code);let runSnapshot;
+ if(!inviteRunId&&!codeName)return $("joinMsg").textContent="Escribe el código de tu sala.";
+ if(inviteRunId){
+  if(!/^partida-[a-zA-Z0-9-]{1,100}$/.test(inviteRunId))throw Error('El enlace del instrumento no es válido.');
+  const invitation=await getDoc(doc(db,ROOT,inviteRunId));runSnapshot=invitation;
+  if(epoch!==navigationEpoch)return;
+  if(!invitation.exists()||invitation.data().recordType!=='run')return $("joinMsg").textContent='Este instrumento ya no está disponible.';
+  room=inviteRunId;
+ }else{
+  const alias=await getDoc(aliasRef(codeName));
+  if(epoch!==navigationEpoch)return;
+  if(!alias.exists()||!alias.data().activeRun)return $("joinMsg").textContent="No hay una sala activa con ese nombre. Verifica el código con tu facilitador.";
+  room=alias.data().activeRun;
+  runSnapshot=await getDoc(roomRef());if(epoch!==navigationEpoch)return;
+ }
+ if(!runSnapshot.exists()||runSnapshot.data().recordType!=='run')throw Error('Esta sala ya no está disponible.');
+ const live=runSnapshot.data(),identityType=participantIdentity(live);configureIdentity(live);
+ if(live.deleting)throw Error('Esta sala se está eliminando y ya no recibe participantes.');
+ const error=identityError(name,identityType);if(error){$("playerName").setAttribute('aria-invalid','true');$("joinBtn").disabled=true;return $("joinMsg").textContent=error;}
+ playerName=identityType==='cedula'?participantLabel({name:String(name),identityType}):String(name).trim();
+ // Store a room-specific digest for recovery; never persist the full document number.
+ const target=identityType==='cedula'?await cedulaKey(String(name)):normalizeName(playerName),snap=await getDocs(playersRef());
+ const existing=snap.docs.find(d=>(d.data().identityType||'name')===identityType&&(identityType==='cedula'?d.data().normalizedName===target:normalizeName(d.data().name)===target));
+ if(epoch!==navigationEpoch)return;
+ if(existing){playerId=existing.id;playerName=existing.data().name||playerName;saveSession();$("welcome").textContent="Sesión recuperada: "+participantLabel(existing.data())+" · "+(existing.data().score||0)+" pts";show("waiting");await touchPresence(true);if(epoch===navigationEpoch)listenPlayer();return;}
+ const ref=doc(playersRef()),runDocument=roomRef();playerId=ref.id;
+ await runTransaction(db,async transaction=>{const current=await transaction.get(runDocument);if(!current.exists()||current.data().deleting)throw Error('Esta sala ya no está disponible.');transaction.set(ref,{name:playerName,identityType,normalizedName:target,score:0,correctTime:0,rank:null,answers:{},online:true,lastSeen:serverTimestamp(),joinedAt:serverTimestamp()});});
+ if(epoch!==navigationEpoch)return;saveSession();$("welcome").textContent="¡Listo, "+participantLabel({name:playerName,identityType})+"!";show("waiting");listenPlayer();
+}
+
+const roomRef=()=>doc(db,ROOT,room); const playersRef=()=>collection(db,ROOT,room,"players"); const pRef=id=>doc(db,ROOT,room,"players",id); const scoreboardRef=()=>doc(db,ROOT,room,"public","scoreboard");
+const selfPaced=createSelfPacedQuiz({db,roomRef,playerRef:()=>pRef(playerId),playersRef,getQuestions:()=>Q,getPlayerId:()=>playerId,getPlayerName:()=>playerName,$,show,escapeHtml});
+function safeId(s){return (s.toLowerCase().replace(/[^a-z0-9áéíóúñ]+/gi,"-").replace(/^-|-$/g,"").slice(0,40)||"jugador")+"-"+Math.random().toString(36).slice(2,7)}
+async function ensureRoom(){const r=await getDoc(roomRef());if(!r.exists())await setDoc(roomRef(),{questionIndex:0,status:"lobby",openedAt:0,duration:60,bankId:currentBankId,updatedAt:serverTimestamp()})}
+$("joinBtn").onclick=async()=>{if(joinBusy)return;joinBusy=true;$("joinBtn").disabled=true;try{await recoverOrJoin($("playerName").value,$("roomCode").value)}catch(e){console.error(e);$("joinMsg").textContent=e.message||"No fue posible entrar o recuperar la sesión.";}finally{joinBusy=false;$("joinBtn").disabled=!joinRun||!!identityError($("playerName").value,participantIdentity(joinRun));}};
+$("hostBtn").onclick=async()=>{
+ try {
+   const email=$("hostEmail").value.trim();
+   if(!email || !$("hostPass").value) throw new Error("Ingresa correo y contraseña.");
+   const session=await signInWithEmailAndPassword(facilitatorAuth,email,$("hostPass").value);
+   const token=await getIdTokenResult(session.user,true);
+   if(token.claims.facilitator!==true) throw new Error("Esta cuenta no tiene el rol de facilitador.");
+   $("hostPass").value="";
+   show("roomManager");await renderRooms();
+ }catch(error){$("hostMsg").textContent=error.message||"Acceso no autorizado";}
+};
+$("roomBack").onclick=()=>show("home");
+$("manageQuizRooms").onclick=async()=>{hostUnsubs.forEach(u=>u());hostUnsubs=[];clearInterval(tick);show('roomManager');await renderRooms();};
+async function renderRooms(){
+ try{
+  const all=await getDocs(collection(db,ROOT));
+  const aliases=all.docs.filter(d=>d.data().recordType==="class_alias").sort((a,b)=>a.id.localeCompare(b.id,"es"));
+  $("roomHistory").innerHTML=aliases.length?aliases.map(d=>{
+   const a=d.data(),encoded=encodeURIComponent(d.id).replaceAll("'",'%27');return `<div class="qrow room-row"><div class="room-info"><b>${escapeHtml(a.displayName||d.id)}</b><div class="mini">${(a.runs||[]).length} partida(s) · ${a.deleting?'Eliminación pendiente':a.activeRun?"Sala disponible":"Sin partida"}</div></div><div class="room-actions"><button class="secondary" type="button" onclick="window.openClassRoom('${encoded}')" ${a.deleting||roomDeletionBusy?'disabled':''}>Abrir</button><button class="room-delete" type="button" onclick="window.deleteClassRoom('${encoded}')" ${roomDeletionBusy?'disabled':''}>${a.deleting?'Reintentar eliminación':'Eliminar sala'}</button></div></div>`
+  }).join(""):'<p class="muted">Todavía no has creado salas.</p>';
+ }catch(e){$("roomManagerMsg").textContent="No se pudieron cargar las salas: "+e.message;}
+}
+window.openClassRoom=async encoded=>{$("className").value=decodeURIComponent(encoded);await reopenClass()};
+function setRoomDeletionBusy(busy){roomDeletionBusy=busy;$("roomManager").querySelectorAll('button,input,select').forEach(el=>el.disabled=busy);}
+window.deleteClassRoom=async encoded=>{
+ if(roomDeletionBusy)return;
+ let marked=false;
+ setRoomDeletionBusy(true);$("roomManagerMsg").textContent='';
+ try{
+  if(!facilitatorAuth.currentUser)throw Error('Ingresa como facilitador para eliminar salas.');
+  const token=await getIdTokenResult(facilitatorAuth.currentUser,true);if(token.claims.facilitator!==true)throw Error('Tu cuenta no tiene el rol de facilitador.');
+  const key=decodeURIComponent(encoded),alias=doc(db,ROOT,key),snapshot=await getDoc(alias);
+  if(!snapshot.exists()||snapshot.data().recordType!=='class_alias')throw Error('Esta sala ya no está disponible.');
+  const data=snapshot.data(),name=data.displayName||key,all=await getDocs(collection(db,ROOT)),byId=new Map(all.docs.map(d=>[d.id,d]));
+  const ids=new Set([...(Array.isArray(data.runs)?data.runs:[]),...(Array.isArray(data.pendingDeletionRuns)?data.pendingDeletionRuns:[]),data.activeRun].filter(id=>typeof id==='string'&&/^partida-[a-zA-Z0-9-]{1,100}$/.test(id)));
+  for(const d of all.docs)if(d.data().recordType==='run'&&normalizeRoom(d.data().className)===key)ids.add(d.id);
+  // Never follow an inconsistent history entry into a different classroom.
+  for(const id of ids){const d=byId.get(id);if(d&&(d.data().recordType!=='run'||d.data().className&&normalizeRoom(d.data().className)!==key))ids.delete(id);}
+  const runIds=[...ids];
+  if(!confirm(`¿Eliminar la sala «${name}»?\n\nSe borrarán ${runIds.length} partida(s), sus participantes, respuestas y resultados. Los bancos de preguntas se conservan.\n\nEsta acción no se puede deshacer.`))return;
+  await runTransaction(db,async transaction=>{
+   const latest=await transaction.get(alias);if(!latest.exists())throw Error('La sala ya se eliminó.');
+   const value=latest.data();if(value.activeRun!==data.activeRun||JSON.stringify(value.runs||[])!==JSON.stringify(data.runs||[]))throw Error('La sala cambió mientras confirmabas. Vuelve a intentar la eliminación.');
+   transaction.update(alias,{deleting:true,pendingDeletionRuns:runIds,activeRun:'',updatedAt:serverTimestamp()});
+  });marked=true;
+  $("roomManagerMsg").textContent=`Eliminando «${name}»…`;
+  await commitInChunks(runIds.filter(id=>byId.has(id)).map(id=>batch=>batch.update(doc(db,ROOT,id),{deleting:true,status:'closed',selfPacedStatus:'closed',updatedAt:serverTimestamp()})));
+  let restrictedBoards=0;
+  for(const id of runIds){
+   const participants=await getDocs(collection(db,ROOT,id,'players'));
+   let publicDocs=[];
+   try{publicDocs=(await getDocs(collection(db,ROOT,id,'public'))).docs;}
+   catch(error){if(error.code==='permission-denied')restrictedBoards++;else throw error;}
+   const docs=[...participants.docs,...publicDocs];
+   await commitInChunks([...docs.map(d=>batch=>batch.delete(d.ref)),batch=>batch.delete(doc(db,ROOT,id))]);
+  }
+  const latest=await getDoc(alias);if(latest.exists()&&latest.data().activeRun)throw Error('Se creó una nueva partida mientras se eliminaba la sala. Reintenta para incluirla.');
+  await deleteDoc(alias);
+  const saved=loadSession();if(saved&&ids.has(saved.room)){localStorage.removeItem(SESSION_KEY);$("resumeQuiz").classList.add('hidden');}
+  if(ids.has(room)){detachPlayer();hostUnsubs.forEach(u=>u());hostUnsubs=[];room=DEFAULT_ROOM;state=null;players=[];playerId='';playerName='';classAlias='';}
+  if(normalizeRoom($("className").value)===key)$("className").value='';
+  $("roomManagerMsg").textContent=`Sala «${name}» eliminada.`+(restrictedBoards?' No se pudieron comprobar o borrar algunos tableros públicos de ranking por sus permisos de Firebase.':'');
+ }catch(error){$("roomManagerMsg").textContent=(marked?'La eliminación no se completó. Puedes pulsar «Reintentar eliminación». ':'No se pudo eliminar la sala. ')+(error.message||error);}
+ finally{setRoomDeletionBusy(false);await renderRooms();}
+};
+async function enterHostRun(runId){
+ hostUnsubs.forEach(u=>u());hostUnsubs=[];if(playerUnsub)playerUnsub();selfPaced.stop();clearInterval(tick);room=runId;state=null;players=[];selectedQuestions=null;$("pickerList").dataset.editing='false';$("quizSettings").dataset.editing='false';$("participantSettings").dataset.editing='false';$("participantSettingsMsg").textContent='';
+ const rs=await getDoc(roomRef());if(!rs.exists())throw Error("No existe la partida seleccionada.");
+ const rd=rs.data();if(rd.deleting)throw Error('Esta sala se está eliminando. Vuelve a Mis salas para reintentar.');state=rd;selectedQuestions=Array.isArray(rd.selectedQuestions)?rd.selectedQuestions:null;currentBankId=rd.bankId||"agilismo";
+ if(Array.isArray(rd.questions))Q=questionsFromFirestore(rd.questions);
+ $("hostRoom").textContent=classAlias||room;show("hostPanel");listenHost();await loadBanks();
+ // loadBanks only loads the editor; restore the run's own question snapshot.
+ if(Array.isArray(rd.questions)){Q=questionsFromFirestore(rd.questions);renderQuestionAdmin();renderHost();}
+}
+async function reopenClass(){
+ if(roomDeletionBusy)return;
+ try{const name=normalizeRoom($("className").value);if(!name)throw Error("Escribe el nombre de la clase.");
+ const a=await getDoc(aliasRef(name));if(!a.exists()||!a.data().activeRun)throw Error("No existe una partida para esa clase.");
+ if(a.data().deleting)throw Error('Esta sala tiene una eliminación pendiente.');
+ classAlias=a.data().displayName||name;await enterHostRun(a.data().activeRun);
+ }catch(e){$("roomManagerMsg").textContent=e.message;}
+}
+$("reopenRoom").onclick=reopenClass;
+$("newQuizMode").onchange=()=>{const autonomous=$("newQuizMode").value==='self_paced';$("newQuestionDurationField").classList.toggle('hidden',autonomous);$("newSelfPacedInfo").classList.toggle('hidden',!autonomous);};
+$("createRoom").onclick=async()=>{
+ if(roomDeletionBusy)return;
+ try{
+  const name=normalizeRoom($("className").value);if(!name)throw Error("Escribe el nombre de la clase.");
+  const mode=$("newQuizMode").value==='self_paced'?'self_paced':'facilitated';
+  const duration=mode==='self_paced'?60:Number($("newQuestionDuration").value);if(!Number.isInteger(duration)||duration<5||duration>600)throw Error('El tiempo por pregunta debe estar entre 5 y 600 segundos.');
+  const alias=aliasRef(name),old=await getDoc(alias);const data=old.exists()?old.data():{};
+  if(data.deleting)throw Error('Esta sala tiene una eliminación pendiente. Reintenta su eliminación antes de crearla otra vez.');
+  if(data.activeRun&&!confirm("Ya existe una partida de esta clase. ¿Crear una NUEVA con puntuaciones en cero? La anterior quedará en el historial."))return;
+  const id=doc(collection(db,ROOT)).id,runId="partida-"+id;
+  const bank=await getDoc(doc(db,BANKS,currentBankId));
+  const questions=bank.exists()&&Array.isArray(bank.data().questions)?bank.data().questions:questionsToFirestore(Q);
+  await runTransaction(db,async transaction=>{
+   const latest=await transaction.get(alias),value=latest.exists()?latest.data():{};
+   if(value.deleting||value.activeRun!==data.activeRun)throw Error('La sala cambió. Vuelve a intentar crear la partida.');
+   transaction.set(doc(db,ROOT,runId),{recordType:"run",className:name,questionIndex:0,status:"lobby",openedAt:0,duration,mode,rankingVisibility:rankingVisibility({rankingVisibility:$("newRankingVisibility").value}),participantIdentity:participantIdentity({participantIdentity:$("newParticipantIdentity").value}),selfPacedStatus:'draft',bankId:currentBankId,questions,updatedAt:serverTimestamp(),createdAt:serverTimestamp()});
+   transaction.set(alias,{recordType:"class_alias",displayName:$("className").value.trim(),activeRun:runId,runs:[...(value.runs||[]),runId].slice(-100),updatedAt:serverTimestamp()},{merge:true});
+  });classAlias=$("className").value.trim();await enterHostRun(runId);
+ }catch(e){$("roomManagerMsg").textContent="No se pudo crear la sala: "+e.message;}
+};
+function points(elapsed){return evaluateAnswer(0,0,elapsed,questionSeconds(state)).points;}
+window.addEventListener("online",async()=>{if($("connStatus"))$("connStatus").textContent="🟢 Conectado";await touchPresence(true);});
+window.addEventListener("offline",()=>{if($("connStatus"))$("connStatus").textContent="🔴 Sin conexión";});
+window.addEventListener("pagehide",()=>{touchPresence(false);});
+function listenPlayer(){
+  if(playerUnsub)playerUnsub();
+  selfPaced.stop();
+  let unsubRoom=null,unsubScore=null,board=null,mine=null;
+  const epoch=navigationEpoch;
+  const rankingAllowed=()=>!isSelfPaced(state)&&canShowParticipantRanking(state,Q);
+  function clearRanking(){
+    if(unsubScore){unsubScore();unsubScore=null;}board=null;mine=null;
+    $("playerRankingBox").classList.add('hidden');$("directedRankingBox").classList.add('hidden');
+    $("playerRanking").innerHTML='';$("directedRanking").innerHTML='';
+  }
+  function renderParticipantBoard(){
+    if(epoch!==navigationEpoch||!rankingAllowed())return;
+    const latest=board&&(!state.lastResults||Number(board.questionIndex)>=Number(state.lastResults.questionIndex))?board:state.lastResults||board||{};
+    const top=Array.isArray(latest.top)?latest.top:[];
+    const html=top.map((p,i)=>`<div class="rankrow"><b>#${i+1}</b><span>${escapeHtml(p.name)}</span><b>${p.score||0} pts</b></div>`).join('')
+      +(mine&&mine.rank?`<div class="rankrow"><b>#${mine.rank}</b><span>${escapeHtml(participantLabel(mine))} · tú</span><b>${mine.score||0} pts</b></div>`:'');
+    $("playerRanking").innerHTML=$("directedRanking").innerHTML=html||'<p class="muted">El ranking aparecerá al revelar los primeros resultados.</p>';
+  }
+  function syncParticipantRanking(){
+    if(!rankingAllowed()){clearRanking();return;}
+    $("playerRankingBox").classList.remove('hidden');$("directedRankingBox").classList.remove('hidden');
+    renderParticipantBoard();
+    if(!unsubScore)unsubScore=onSnapshot(scoreboardRef(),async s=>{
+      if(epoch!==navigationEpoch||!rankingAllowed())return;board=s.exists()?s.data():null;
+      try{const me=await getDoc(pRef(playerId));if(epoch!==navigationEpoch||!rankingAllowed())return;if(me.exists())mine=me.data();}catch{}
+      renderParticipantBoard();
+    },()=>{board=null;renderParticipantBoard();});
+  }
+  unsubRoom=onSnapshot(roomRef(),snap=>{
+    if(epoch!==navigationEpoch)return;
+    if(!snap.exists()||snap.data().deleting){leaveRemovedRoom();return;}
+    state=snap.data();
+    if(Array.isArray(state.questions))Q=questionsFromFirestore(state.questions);
+    if(isSelfPaced(state)){
+      clearInterval(tick);clearRanking();
+      selfPaced.updateRun(state);return;
+    }
+    selfPaced.stop();$("selfAfterAnswer").classList.add('hidden');$("selfRetry").classList.add('hidden');$("pTimer").classList.remove('hidden');$("pTimeBarBox").classList.remove('hidden');
+    if($("connStatus"))$("connStatus").textContent=navigator.onLine?"🟢 Conectado":"🔴 Sin conexión";
+    if(state.status==="open"){
+      renderPlayer();
+    }else{
+      clearInterval(tick);
+      show("waiting");
+      const ended=canShowParticipantRanking({...state,rankingVisibility:'final'},Q);
+      $("waitText").textContent=ended?'Completaste el quiz. Este es tu resultado.':state.status==="revealed"?"Resultados de la ronda. Espera a que el facilitador continúe.":"Espera a que el facilitador abra la pregunta.";
+    }
+    getDoc(pRef(playerId)).then(x=>{if(epoch!==navigationEpoch)return;if(x.exists()){mine=x.data();$("waitScore").textContent=(mine.score||0)+" pts";renderParticipantBoard();}}).catch(()=>{});
+    syncParticipantRanking();
+  });
+  playerUnsub=()=>{if(unsubRoom)unsubRoom();clearRanking();selfPaced.stop();clearInterval(tick);};
+}
+function renderPlayer(){let i=state.questionIndex,q=Q[i];if(!q)return;show("playerGame");const order=questionOrder(state,Q);$("pMsg").textContent='';$("pNum").textContent=`Pregunta ${order.indexOf(i)+1} / ${order.length}`;$("pQuestion").textContent=q[1];$("pAnswers").innerHTML="";q[2].forEach((a,k)=>{let b=document.createElement("button");b.className="answer";b.innerHTML=`<span class="answer-letter">${'ABCD'[k]}</span><span>${escapeHtml(a)}</span>`;b.onclick=()=>submitAnswer(k,b);$("pAnswers").appendChild(b)});runPlayerTimer()}
+function runPlayerTimer(){clearInterval(tick);const duration=questionSeconds(state);const update=()=>{let remain=Math.max(0,duration-(Date.now()-(state.openedAt||Date.now()))/1000);$("pTimer").textContent=Math.ceil(remain);$("pTimeBar").style.width=(remain/duration*100)+"%";if(remain<=0){clearInterval(tick);$("pAnswers").querySelectorAll("button").forEach(b=>b.disabled=true);$("pMsg").textContent="Tiempo agotado."}};update();tick=setInterval(update,250)}
+async function submitAnswer(k,b){
+  $("pAnswers").querySelectorAll("button").forEach(x=>x.disabled=true);
+  const duration=questionSeconds(state),elapsed=Math.max(0,(Date.now()-state.openedAt)/1000);
+  if(elapsed>=duration){$("pMsg").textContent='Tiempo agotado.';return;}
+  const q=Q[state.questionIndex];
+  const ps=await getDoc(pRef(playerId)),d=ps.data(),ans=d.answers||{};
+  if(ans[state.questionIndex]!=null)return;
+  ans[state.questionIndex]={...evaluateAnswer(k,q[3],elapsed,duration),points:0};
+  await updateDoc(pRef(playerId),{answers:ans});
+  $("pMsg").textContent="Respuesta registrada. Espera a que el facilitador continúe.";
+}
+function listenHost(){hostUnsubs.forEach(u=>u());hostUnsubs=[onSnapshot(roomRef(),s=>{if(s.exists()){state=s.data();selectedQuestions=Array.isArray(state.selectedQuestions)?state.selectedQuestions:null;if(Array.isArray(state.questions))Q=questionsFromFirestore(state.questions);renderHost()}}),onSnapshot(playersRef(),s=>{players=s.docs.map(d=>({id:d.id,...d.data()}));renderHost()})]}
+function instrumentLocked(){return isSelfPaced(state)&&!!state.selfPacedStatus&&state.selfPacedStatus!=='draft';}
+function assertInstrumentEditable(){if(instrumentLocked())throw Error('El instrumento ya está habilitado. Crea una nueva partida para cambiar preguntas, selección o tiempo sin mezclar los resultados.');}
+function renderParticipantSettings(){
+ if($("participantSettings").dataset.editing!=='true'){$("rankingVisibility").value=rankingVisibility(state);$("participantIdentity").value=participantIdentity(state);}
+ $("participantIdentity").disabled=players.length>0;
+ $("participantSettingsInfo").textContent='Tú siempre podrás consultar el ranking en este panel. '+(players.length?'El tipo de identificación queda fijo desde la primera inscripción.':'Puedes elegir nombre o cédula antes de recibir inscripciones.');
+ const link=new URL(location.href);link.search='';link.hash='';link.searchParams.set('partida',room);$("quizShareLink").value=link.href;
+ $("copyQuizLink").disabled=isSelfPaced(state)&&(!state.selfPacedStatus||state.selfPacedStatus==='draft');
+}
+$("participantSettings").addEventListener('input',()=>{$("participantSettings").dataset.editing='true';$("participantSettingsMsg").textContent='Tienes opciones sin guardar.';});
+$("saveParticipantSettings").onclick=async()=>{
+ try{
+  const visibility=rankingVisibility({rankingVisibility:$("rankingVisibility").value}),identity=participantIdentity({participantIdentity:$("participantIdentity").value});
+  const live=await getDoc(roomRef());if(!live.exists())throw Error('La sala ya no está disponible.');
+  if(identity!==participantIdentity(live.data())){const registrations=await getDocs(playersRef());if(registrations.docs.length)throw Error('Ya hay personas inscritas. Crea una nueva partida para cambiar entre nombre y cédula.');}
+  await updateDoc(roomRef(),{rankingVisibility:visibility,participantIdentity:identity,updatedAt:serverTimestamp()});
+  state={...state,rankingVisibility:visibility,participantIdentity:identity};$("participantSettings").dataset.editing='false';renderParticipantSettings();
+  $("participantSettingsMsg").textContent='Opciones guardadas. Se aplican a quienes ingresen y a quienes ya estén respondiendo.';hostClearError();
+ }catch(e){$("participantSettingsMsg").textContent=e.message;}
+};
+function renderModeSettings(){
+ const autonomous=isSelfPaced(state),locked=instrumentLocked();
+ renderParticipantSettings();
+ if($("quizSettings").dataset.editing!=='true'){$("quizMode").value=autonomous?'self_paced':'facilitated';$("questionDuration").value=questionSeconds(state);}
+ $("questionDurationField").classList.toggle('hidden',$("quizMode").value==='self_paced');
+ $("facilitatedControls").classList.toggle('hidden',autonomous);$("selfHostControls").classList.toggle('hidden',!autonomous);$("hostQuestionCard").classList.toggle('hidden',autonomous);
+ $("answeredLabel").textContent=autonomous?'Finalizaron':'Respondieron';$("responseTitle").textContent=autonomous?'Avance del instrumento':'Respuestas en vivo';
+ $("quizModeInfo").textContent=autonomous?'Sin límite de tiempo. Cada acierto suma de 1 a 10 puntos según la rapidez; la espera entre preguntas también cuenta. Los desempates usan aciertos y menor tiempo acumulado.':'Tú abres, cierras y presentas cada pregunta. El reloj y el ranking son compartidos por la sala.';
+ const started=players.some(p=>Object.keys(p.answers||{}).length||p.selfPaced?.startedAt)||state.status==='open';
+ ['quizMode','questionDuration','saveQuizSettings'].forEach(id=>$(id).disabled=locked||!!started);
+ ['pickAll','pickNone','applySelection'].forEach(id=>$(id).disabled=locked);$("questionPicker").querySelectorAll('input').forEach(el=>el.disabled=locked);
+ $("questionEditor").querySelectorAll('button,input,select,textarea').forEach(el=>el.disabled=locked&&el.id!=='exportBank');
+ if(!autonomous)return;
+ const status=state.selfPacedStatus||'draft',count=selectedIndices().length;
+ $("phaseLabel").textContent={draft:'En preparación',published:'Autónomo habilitado',closed:'Instrumento cerrado'}[status]||status;
+ $("selfHostStatus").textContent=`${count} preguntas · sin límite de tiempo. `+(status==='draft'?'Selecciona el banco y las preguntas; después habilita el instrumento.':'Las preguntas quedan fijas para esta partida.');
+ $("publishSelfQuiz").textContent=status==='closed'?'Reabrir instrumento':'Habilitar instrumento';$("publishSelfQuiz").disabled=status==='published'||!count;
+ $("closeSelfQuiz").disabled=status!=='published';
+}
+$("quizSettings").addEventListener('input',()=>{$("quizSettings").dataset.editing='true';$("questionDurationField").classList.toggle('hidden',$("quizMode").value==='self_paced');});
+$("saveQuizSettings").onclick=async()=>{try{
+ assertInstrumentEditable();if(players.some(p=>Object.keys(p.answers||{}).length||p.selfPaced?.startedAt)||state.status==='open')throw Error('Crea una nueva partida para cambiar la modalidad o el tiempo cuando ya comenzó el quiz.');
+ const mode=$("quizMode").value==='self_paced'?'self_paced':'facilitated';
+ const duration=mode==='self_paced'?60:Number($("questionDuration").value);if(!Number.isInteger(duration)||duration<5||duration>600)throw Error('El tiempo debe ser un número entero entre 5 y 600 segundos.');
+ await updateDoc(roomRef(),{mode,duration,selfPacedStatus:'draft',updatedAt:serverTimestamp()});$("quizSettings").dataset.editing='false';hostClearError();renderHost();
+ }catch(e){hostFailure(e);}};
+$("publishSelfQuiz").onclick=async()=>{try{
+ if(!isSelfPaced(state))throw Error('Guarda primero la modalidad autónoma.');
+ if($("quizSettings").dataset.editing==='true')throw Error('Guarda primero la configuración.');
+ if($("pickerList").dataset.editing==='true')throw Error('Pulsa Aplicar selección antes de habilitar el instrumento.');
+ const indices=selectedIndices();if(!indices.length)throw Error('Selecciona al menos una pregunta.');
+ await updateDoc(roomRef(),{mode:'self_paced',selfPacedStatus:'published',quizVersion:state.quizVersion||crypto.randomUUID(),questions:questionsToFirestore(Q),selectedQuestions:indices,updatedAt:serverTimestamp()});
+ $("quizShareMsg").textContent='Listo. Copia el enlace y compártelo; cada persona podrá comenzar sin esperar al facilitador.';hostClearError();
+ }catch(e){hostFailure(e);}};
+$("closeSelfQuiz").onclick=async()=>{if(!confirm('¿Cerrar el instrumento y detener la recepción de respuestas?'))return;try{await updateDoc(roomRef(),{selfPacedStatus:'closed',updatedAt:serverTimestamp()});hostClearError();}catch(e){hostFailure(e);}};
+$("copyQuizLink").onclick=async()=>{try{await navigator.clipboard.writeText($("quizShareLink").value);$("quizShareMsg").textContent='Enlace copiado.';}catch{$("quizShareLink").focus();$("quizShareLink").select();$("quizShareMsg").textContent='El enlace está seleccionado. Cópialo con Ctrl+C o mantén pulsado para copiar.';}};
+function renderHost(){
+ if(!state)return;renderModeSettings();$("connected").textContent=players.length;
+ if(isSelfPaced(state)){
+  clearInterval(tick);const ranked=selfPacedRanking(players,state,Q);$("answered").textContent=ranked.filter(p=>p.answeredCount===selectedIndices().length).length;
+  renderDist(0);renderRank();renderPicker();renderModeSettings();return;
+ }
+ if(!Q.length){$("answered").textContent='0';$("hNum").textContent='Sin preguntas';$("hQuestion").textContent='Este banco está vacío. Agrega una pregunta o usa la carga masiva.';$("hOptions").innerHTML='';$("distribution").innerHTML='';$("ranking").innerHTML='';['openQ','closeQ','revealQ','nextQ'].forEach(id=>$(id).disabled=true);return;}
+ const i=Math.min(state.questionIndex||0,Q.length-1),q=Q[i];$("answered").textContent=players.filter(p=>p.answers&&p.answers[i]!=null).length;
+ $("hNum").textContent=`Pregunta ${i+1} / ${Q.length}`;$("hQuestion").textContent=q[1];$("hOptions").innerHTML=q[2].map((x,k)=>`<div class="${state.status==='revealed'&&k===q[3]?'correct':''}" style="padding:8px;border-radius:8px">${'ABCD'[k]}. ${escapeHtml(x)}</div>`).join('');
+ $("phaseLabel").textContent={lobby:'En espera',open:'Pregunta abierta',closed:'Respuestas cerradas',revealed:'Respuesta revelada'}[state.status]||state.status;
+ $("openQ").disabled=state.status==='open';$("closeQ").disabled=state.status!=='open';$("revealQ").disabled=state.status==='open'||state.status==='lobby';$("nextQ").disabled=state.status!=='revealed'||selectedIndices().length<2;
+ renderDist(i);renderRank();renderPicker();runHostTimer();
+}
+function renderDist(i){
+  if(isSelfPaced(state)){
+    const rows=selfPacedRanking(players,state,Q),total=selectedIndices().length;
+    $("distribution").innerHTML=`<p class="muted">${rows.length} comenzaron · ${rows.filter(p=>p.answeredCount===total).length} finalizaron. El ranking se actualiza con cada respuesta.</p>`;
+    $("responseDetails").innerHTML=rows.length?`<div style="overflow:auto"><table class="resultTable"><thead><tr><th>Participante</th><th>Avance</th><th>Aciertos</th><th>Puntos</th><th>Estado</th></tr></thead><tbody>${rows.map(p=>`<tr><td>${escapeHtml(p.name)}</td><td>${p.answeredCount}/${total}</td><td>${p.correctCount}</td><td>${p.score}</td><td>${p.answeredCount===total?'Finalizó':'En curso'}</td></tr>`).join('')}</tbody></table></div>`:'<p class="muted">Comparte el enlace para recibir respuestas.</p>';
+    return;
+  }
+  if(state.status!=="revealed"){
+    $("distribution").innerHTML='<p class="muted">Los resultados se revelarán al finalizar la pregunta.</p>'; $("responseDetails").innerHTML="";
+    return;
+  }
+  let counts=[0,0,0,0];
+  players.forEach(p=>{let a=p.answers&&p.answers[i];if(a&&a.option>=0&&a.option<4)counts[a.option]++});
+  let total=counts.reduce((a,b)=>a+b,0);
+  $("distribution").innerHTML=counts.map((n,k)=>`<div class="optbar"><b>${String.fromCharCode(65+k)}</b><div class="track"><div class="fill" style="width:${total?n/total*100:0}%"></div></div><span>${n} · ${total?Math.round(n/total*100):0}%</span></div>`).join("");
+  const rows=[...players].map(p=>({p,a:p.answers&&p.answers[i]})).filter(x=>x.a).sort((x,y)=>Number(x.a.elapsed)-Number(y.a.elapsed));
+  $("responseDetails").innerHTML='<h3>Detalle por participante</h3>'+(rows.length?`<div style="overflow:auto"><table class="resultTable"><thead><tr><th>Participante</th><th>Respuesta</th><th>Resultado</th><th>Tiempo</th><th>Puntos</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${escapeHtml(x.p.name)}</td><td>${String.fromCharCode(65+Number(x.a.option))}</td><td>${x.a.correct?"✓ Correcta":"✕ Incorrecta"}</td><td>${Number(x.a.elapsed).toFixed(1)} s</td><td>${x.a.points||0}</td></tr>`).join("")}</tbody></table></div>`:'<p class="muted">No hubo respuestas.</p>');
+}
+function rankComparator(x,y){
+  const byScore=(y.score||0)-(x.score||0);
+  if(byScore!==0)return byScore;
+  const tx=Number.isFinite(Number(x.correctTime))?Number(x.correctTime):999999;
+  const ty=Number.isFinite(Number(y.correctTime))?Number(y.correctTime):999999;
+  if(tx!==ty)return tx-ty;
+  return String(x.name||"").localeCompare(String(y.name||""),"es");
+}
+function renderRank(){
+  if(isSelfPaced(state)){
+    const ranking=selfPacedRanking(players,state,Q);
+    $("ranking").innerHTML=ranking.length?ranking.map((p,i)=>`<div class="rankrow"><b>#${i+1}</b><span>${escapeHtml(p.name)}<small class="mini rankdetail">${p.correctCount} aciertos · ${p.correctTime.toFixed(1)} s en aciertos</small></span><b>${p.score} pts</b></div>`).join(''):'<p class="muted">El ranking aparecerá cuando alguien comience.</p>';
+    return;
+  }
+  if(state.status!=="revealed"){
+    $("ranking").innerHTML='<p class="muted">El ranking se mostrará cuando reveles los resultados.</p>';
+    return;
+  }
+  let a=[...players].sort(rankComparator);
+ const isFinal=state.questionIndex===selectedIndices().at(-1);
+  const visible=isFinal?a:a.slice(0,10);
+  $("ranking").innerHTML=visible.length
+    ? visible.map((p,i)=>`<div class="rankrow"><b>${i===0?"🥇":i===1?"🥈":i===2?"🥉":"#"+(i+1)}</b><span>${escapeHtml(p.name)}</span><b>${p.score||0} pts</b></div>`).join("")
+      + (!isFinal && a.length>10 ? `<p class="muted" style="margin-top:12px">Mostrando Top 10 de ${a.length} participantes.</p>` : "")
+    : '<p class="muted">Aún no hay participantes.</p>';
+}
+function runHostTimer(){clearInterval(tick);const duration=questionSeconds(state);if(state.status!=="open"){$("hTimer").textContent=state.status==="lobby"?String(duration):"—";return}const f=()=>{let r=Math.max(0,duration-(Date.now()-state.openedAt)/1000);$("hTimer").textContent=Math.ceil(r);if(r<=0)clearInterval(tick)};f();tick=setInterval(f,250)}
+$("openQ").onclick=()=>{if(!isSelfPaced(state))return updateDoc(roomRef(),{status:"open",openedAt:Date.now(),updatedAt:serverTimestamp()});};
+$("closeQ").onclick=()=>{if(!isSelfPaced(state))return updateDoc(roomRef(),{status:"closed",updatedAt:serverTimestamp()});};
+function hostFailure(e){console.error(e);const box=$("hostError");box.style.display="block";box.textContent="No se pudo completar la operación: "+(e?.message||e)+". Revisa permisos de Firestore y conexión.";}
+function hostClearError(){$("hostError").style.display="none";}
+async function commitInChunks(ops){for(let i=0;i<ops.length;i+=400){const b=writeBatch(db);ops.slice(i,i+400).forEach(fn=>fn(b));await b.commit();}}
+$("revealQ").onclick=async()=>{
+  hostClearError();$("revealQ").disabled=true;
+  try{
+    if(!state||state.status!=="closed")throw Error("Primero debes cerrar las respuestas.");
+    const i=state.questionIndex;
+    const snap=await getDocs(playersRef());
+    const scored=snap.docs.map(d=>{
+      const p=d.data(),ans={...(p.answers||{})};
+      if(ans[i]!=null){
+        const duration=questionSeconds(state),elapsed=Math.max(0,Number(ans[i].elapsed??duration));
+        ans[i]={...ans[i],...evaluateAnswer(Number(ans[i].option),Number(Q[i][3]),elapsed,duration)};
+      }
+      let score=0,correctTime=0;
+      Object.values(ans).forEach(a=>{score+=Number(a.points||0);if(a.correct)correctTime+=Number(a.elapsed||0);});
+      return {id:d.id,ref:d.ref,name:p.name||"",identityType:p.identityType||'name',answers:ans,score,correctTime:+correctTime.toFixed(3)};
+    }).sort(rankComparator);
+    await commitInChunks(scored.map((p,idx)=>b=>b.update(p.ref,{answers:p.answers,score:p.score,correctTime:p.correctTime,rank:idx+1})));
+    // Publicar resultados incluso si las reglas aún no permiten la subcolección /public.
+    const top=(i===selectedIndices().at(-1)?scored:scored.slice(0,10)).map(p=>({name:participantLabel(p),score:p.score}));
+    try{await setDoc(scoreboardRef(),{top,total:scored.length,questionIndex:i,updatedAt:serverTimestamp()},{merge:true});}
+    catch(e){console.warn("Tablero público no disponible; se conservan resultados en jugadores y sala.",e);}
+    await updateDoc(roomRef(),{status:"revealed",updatedAt:serverTimestamp(),lastResults:{questionIndex:i,top,total:scored.length}});
+  }catch(e){hostFailure(e);}
+  finally{if(state)renderHost();}
+};
+let selectedQuestions=null;
+function selectedIndices(){return questionOrder({selectedQuestions},Q);}
+function renderPicker(){
+ const box=$("pickerList");if(!box||!Q.length)return;
+ const pending=[...box.querySelectorAll('.pickCheck')];
+ if(document.activeElement?.closest?.('#pickerList')||box.dataset.editing==='true')return;
+ const indices=selectedIndices();
+ $("pickerStatus").textContent=`${indices.length} de ${Q.length} preguntas seleccionadas · actual: ${(state?.questionIndex??0)+1}`;
+ box.innerHTML=Q.map((q,i)=>`<div class="qrow" style="display:flex;align-items:center;gap:12px;justify-content:space-between"><label style="flex:1"><input type="checkbox" class="pickCheck" value="${i}" ${indices.includes(i)?"checked":""} ${instrumentLocked()?'disabled':''}> <b>${i+1}.</b> ${escapeHtml(q[1])}</label>${isSelfPaced(state)?'':`<button type="button" class="secondary" onclick="window.jumpQuestion(${i})" ${indices.includes(i)?'':'disabled title="Selecciona y guarda esta pregunta primero"'}>Presentar</button>`}</div>`).join("");
+}
+$("pickerList").addEventListener('change',e=>{if(e.target.matches('.pickCheck'))$("pickerList").dataset.editing='true';});
+$("pickAll").onclick=()=>{$("pickerList").dataset.editing='true';document.querySelectorAll(".pickCheck").forEach(x=>x.checked=true)};
+$("pickNone").onclick=()=>{$("pickerList").dataset.editing='true';document.querySelectorAll(".pickCheck").forEach(x=>x.checked=false)};
+$("applySelection").onclick=async()=>{
+ const arr=[...document.querySelectorAll(".pickCheck:checked")].map(x=>Number(x.value));
+ if(!arr.length)return alert("Selecciona al menos una pregunta.");
+ try{assertInstrumentEditable();await updateDoc(roomRef(),{selectedQuestions:arr,updatedAt:serverTimestamp()});selectedQuestions=arr;$("pickerList").dataset.editing='false';renderPicker();}
+ catch(e){hostFailure(e);}
+};
+window.jumpQuestion=async i=>{
+ if(isSelfPaced(state))return;
+ if(!selectedIndices().includes(i))return alert('Primero selecciona y guarda esta pregunta.');
+ if(!confirm(`¿Presentar la pregunta ${i+1}? La pregunta actual se cerrará y los puntajes se conservarán.`))return;
+ try{hostClearError();await updateDoc(roomRef(),{questionIndex:i,status:"lobby",openedAt:0,updatedAt:serverTimestamp()});}
+ catch(e){hostFailure(e);}
+};
+$("nextQ").onclick=async()=>{
+ if(isSelfPaced(state))return;
+ const available=selectedIndices();const current=state?.questionIndex??0;
+ const next=available[(available.indexOf(current)+1)%available.length];
+ if(next==null)return;
+ try{hostClearError();await updateDoc(roomRef(),{questionIndex:next,status:"lobby",openedAt:0,updatedAt:serverTimestamp()});}
+ catch(e){hostFailure(e);}
+};
+$("resetGame").onclick=async()=>{if(!confirm("¿Reiniciar toda la partida y puntajes? En modalidad autónoma el instrumento volverá a preparación."))return;try{const snap=await getDocs(playersRef());await commitInChunks(snap.docs.map(d=>b=>b.update(d.ref,{score:0,correctTime:0,correctCount:0,answeredCount:0,rank:null,answers:{},selfPaced:null})));await updateDoc(roomRef(),{questionIndex:0,status:'lobby',openedAt:0,selfPacedStatus:'draft',quizVersion:crypto.randomUUID(),updatedAt:serverTimestamp()});hostClearError();}catch(e){hostFailure(e);}};
+$("clearPlayers").onclick=async()=>{if(!confirm("¿Eliminar todos los participantes?"))return;let batch=writeBatch(db);(await getDocs(playersRef())).forEach(d=>batch.delete(d.ref));await batch.commit()};
+
+const bankRef=id=>doc(db,BANKS,id);
+const questionsToFirestore=qs=>qs.map(q=>({
+  title:String(q[0]||"Pregunta"),
+  text:String(q[1]||""),
+  options:Array.isArray(q[2])?q[2].map(String):[],
+  correct:Number(q[3]||0)
+}));
+const questionsFromFirestore=qs=>(Array.isArray(qs)?qs:[]).map(q=>{
+  if(Array.isArray(q)) return q; // compatibility if data ever comes from another source
+  return [q.title||"Pregunta",q.text||"",Array.isArray(q.options)?q.options:[],Number(q.correct||0)];
+});
+async function seedDefaultBank(){
+  const s=await getDoc(bankRef("agilismo"));
+  if(!s.exists()) await setDoc(bankRef("agilismo"),{name:"Agilismo",questions:questionsToFirestore(Q),createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+}
+async function loadBanks(){
+  await seedDefaultBank();
+  const s=await getDocs(collection(db,BANKS));
+  banks=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(a.name).localeCompare(String(b.name),"es"));
+  $("bankSelect").innerHTML=banks.map(b=>`<option value="${escapeHtml(b.id)}">${escapeHtml(b.name||b.id)}</option>`).join("");
+  if(!banks.some(b=>b.id===currentBankId)) currentBankId=banks[0]?.id||"agilismo";
+  $("bankSelect").value=currentBankId;
+  await selectBank(currentBankId,false);
+}
+async function selectBank(id,syncRoom=true){
+  if(syncRoom)assertInstrumentEditable();
+  const s=await getDoc(bankRef(id)); if(!s.exists())return;
+  currentBankId=id; const d=s.data();
+  if(Array.isArray(d.questions)&&!instrumentLocked()) Q=questionsFromFirestore(d.questions);
+  renderQuestionAdmin();
+  $("bulkQuestions").value=Q.map(q=>[q[1],...q[2],String.fromCharCode(65+q[3])].join("\t")).join("\n");
+  if(syncRoom){selectedQuestions=null;await setDoc(roomRef(),{questions:questionsToFirestore(Q),bankId:id,selectedQuestions:null,questionIndex:0,status:"lobby",openedAt:0,updatedAt:serverTimestamp()},{merge:true});}
+  renderHost();
+}
+function renderQuestionAdmin(){
+  const box=$("questionList"); if(!box)return;
+  box.innerHTML=Q.map((q,i)=>`<div class="qrow"><div class="qrowhead"><div><b>${i+1}. ${escapeHtml(q[1])}</b><div class="mini">Correcta: ${String.fromCharCode(65+q[3])} · ${escapeHtml(q[2][q[3]])}</div></div><div class="qactions"><button class="secondary" onclick="window.editQ(${i})">✏️ Editar</button><button class="secondary" onclick="window.dupQ(${i})">📋 Duplicar</button><button class="secondary" onclick="window.moveQ(${i},-1)">↑</button><button class="secondary" onclick="window.moveQ(${i},1)">↓</button><button class="danger" onclick="window.delQ(${i})">🗑️</button></div></div></div>`).join("");
+}
+async function persistBank(){
+  assertInstrumentEditable();selectedQuestions=null;
+  const b=banks.find(x=>x.id===currentBankId);
+  await setDoc(bankRef(currentBankId),{
+    name:b?.name||currentBankId,
+    questions:questionsToFirestore(Q),
+    updatedAt:serverTimestamp()
+  },{merge:true});
+  await setDoc(roomRef(),{
+    questions:questionsToFirestore(Q),
+    bankId:currentBankId,
+    questionIndex:0,
+    status:"lobby",
+    openedAt:0,
+    selectedQuestions:null,
+    updatedAt:serverTimestamp()
+  },{merge:true});
+  renderQuestionAdmin();
+  renderHost();
+}
+window.editQ=i=>{assertInstrumentEditable();editingIndex=i;const q=Q[i];$("singleEditorTitle").textContent=`Editar pregunta ${i+1}`;$("editQuestion").value=q[1];["A","B","C","D"].forEach((x,k)=>$("edit"+x).value=q[2][k]);$("editCorrect").value=q[3];$("singleEditor").classList.remove("hidden");$("singleEditor").scrollIntoView({behavior:"smooth",block:"center"});}
+window.dupQ=async i=>{assertInstrumentEditable();Q.splice(i+1,0,JSON.parse(JSON.stringify(Q[i])));await persistBank();}
+window.delQ=async i=>{assertInstrumentEditable();if(Q.length<=1)return alert("El banco debe conservar al menos una pregunta.");if(confirm("¿Eliminar esta pregunta?")){Q.splice(i,1);await persistBank();}}
+window.moveQ=async(i,d)=>{assertInstrumentEditable();const j=i+d;if(j<0||j>=Q.length)return;[Q[i],Q[j]]=[Q[j],Q[i]];await persistBank();}
+$("addQuestion").onclick=()=>{editingIndex=null;$("singleEditorTitle").textContent="Nueva pregunta";$("editQuestion").value="";["A","B","C","D"].forEach(x=>$("edit"+x).value="");$("editCorrect").value="0";$("singleEditor").classList.remove("hidden");};
+$("cancelSingle").onclick=()=>$("singleEditor").classList.add("hidden");
+$("saveSingle").onclick=async()=>{
+  try{
+    assertInstrumentEditable();
+    const text=$("editQuestion").value.trim(),opts=["A","B","C","D"].map(x=>$("edit"+x).value.trim()),correct=Number($("editCorrect").value);
+    if(!text||opts.some(x=>!x))return alert("Completa la pregunta y las cuatro opciones.");
+    const q=["Pregunta",text,opts,correct];
+    if(editingIndex===null)Q.push(q);else Q[editingIndex]=q;
+    $("singleEditor").classList.add("hidden");
+    await persistBank();
+    $("editorMsg").textContent="✓ Pregunta guardada.";
+  }catch(e){console.error(e);$("editorMsg").textContent="Error al guardar: "+(e?.message||e);}
+};
+$("bankSelect").onchange=async e=>{try{await selectBank(e.target.value,true);}catch(error){hostFailure(error);$("bankSelect").value=currentBankId;}};
+$("newBank").onclick=async()=>{
+  try{
+    assertInstrumentEditable();
+    const name=prompt("Nombre del nuevo banco:"); if(!name?.trim())return;
+    const id=name.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+"-"+Date.now().toString().slice(-5);
+    await setDoc(bankRef(id),{name:name.trim(),questions:[],createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+    banks.push({id,name:name.trim(),questions:[]}); currentBankId=id; Q=[];selectedQuestions=null;
+    $("bankSelect").innerHTML=banks.map(b=>`<option value="${escapeHtml(b.id)}">${escapeHtml(b.name||b.id)}</option>`).join("");
+    $("bankSelect").value=id; $("bulkQuestions").value=""; renderQuestionAdmin();
+    await setDoc(roomRef(),{questions:[],bankId:id,selectedQuestions:null,questionIndex:0,status:"lobby",openedAt:0,updatedAt:serverTimestamp()},{merge:true});
+    renderHost();
+    $("editorMsg").textContent="Banco creado. Agrega preguntas o pégalas en Importación masiva.";
+  }catch(e){console.error(e);$("editorMsg").textContent="Error al crear banco: "+(e?.message||e);}
+};
+$("renameBank").onclick=async()=>{const b=banks.find(x=>x.id===currentBankId);const name=prompt("Nuevo nombre:",b?.name||currentBankId);if(!name?.trim())return;await setDoc(bankRef(currentBankId),{name:name.trim(),updatedAt:serverTimestamp()},{merge:true});if(b)b.name=name.trim();$("bankSelect").selectedOptions[0].textContent=name.trim();};
+$("deleteBank").onclick=async()=>{assertInstrumentEditable();if(banks.length<=1)return alert("Debe existir al menos un banco.");if(!confirm("¿Eliminar este banco de preguntas?"))return;await deleteDoc(bankRef(currentBankId));await loadBanks();};
+$("exportBank").onclick=()=>{const esc=v=>'"'+String(v).replaceAll('"','""')+'"';const csv=["Pregunta,Opción A,Opción B,Opción C,Opción D,Correcta",...Q.map(q=>[q[1],...q[2],String.fromCharCode(65+q[3])].map(esc).join(","))].join("\n");const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(banks.find(x=>x.id===currentBankId)?.name||"preguntas")+".csv";a.click();URL.revokeObjectURL(a.href);};
+$("toggleEditor").onclick=()=>{
+  const ed=$("questionEditor");
+  ed.open=!ed.open;
+  if(ed.open && !$("bulkQuestions").value.trim()){
+    $("bulkQuestions").value=Q.map(q=>[q[1],...q[2],String.fromCharCode(65+q[3])].join("\t")).join("\n");
+  }
+};
+$("loadCurrent").onclick=()=>{
+  $("bulkQuestions").value=Q.map(q=>[q[1],...q[2],String.fromCharCode(65+q[3])].join("\t")).join("\n");
+  $("editorMsg").textContent=`${Q.length} preguntas cargadas para editar.`;
+};
+$("chooseQuestionFile").onclick=()=>$("questionFile").click();
+$("questionFile").onchange=async e=>{
+  const f=e.target.files?.[0]; if(!f)return;
+  try{
+    const text=await f.text();
+    let normalized=text.replace(/\r/g,"").trim();
+    const lines=normalized.split("\n").filter(Boolean);
+    if(!lines.length) throw new Error("El archivo está vacío.");
+    // CSV simple parser supporting quoted commas.
+    if(f.name.toLowerCase().endsWith(".csv")){
+      const parseCSV=line=>{
+        const out=[]; let cur="",q=false;
+        for(let i=0;i<line.length;i++){
+          const ch=line[i];
+          if(ch==='"'){
+            if(q&&line[i+1]==='"'){cur+='"';i++;}
+            else q=!q;
+          }else if(ch===","&&!q){out.push(cur);cur="";}
+          else cur+=ch;
+        }
+        out.push(cur); return out;
+      };
+      const rows=lines.map(parseCSV);
+      const first=rows[0].map(x=>x.trim().toLowerCase());
+      const hasHeader=first[0].includes("pregunta") && first.length>=6;
+      const data=hasHeader?rows.slice(1):rows;
+      normalized=data.map(r=>r.slice(0,6).join("\t")).join("\n");
+    }
+    $("bulkQuestions").value=normalized;
+    $("editorMsg").textContent=`Archivo ${f.name} cargado. Pulsa “Guardar cambios” para importarlo a Firebase.`;
+  }catch(err){$("editorMsg").textContent="ERROR al leer archivo: "+(err?.message||err);}
+};
+
+$("saveQuestions").onclick=async()=>{
+  const msg=$("editorMsg");
+  try{
+    assertInstrumentEditable();
+    msg.textContent="Validando y guardando...";
+    const raw=$("bulkQuestions").value.replace(/\r/g,"").trim();
+    if(!raw) throw new Error("El cuadro está vacío.");
+
+    const lines=raw.split("\n").map(x=>x.trim()).filter(Boolean);
+    const parsed=lines.map((line,idx)=>{
+      let c;
+      if(line.includes("\t")) c=line.split("\t");
+      else if(line.includes(";")) c=line.split(";");
+      else if(line.includes("|")) c=line.split("|");
+      else throw new Error(`Fila ${idx+1}: no encuentro separadores. Pega desde Excel o usa ; entre columnas.`);
+      c=c.map(x=>x.trim()).filter((x,i,a)=>!(i===0&&x==="") && !(i===a.length-1&&x===""));
+      if(c.length!==6) throw new Error(`Fila ${idx+1}: encontré ${c.length} columnas; deben ser 6: Pregunta, A, B, C, D, Correcta.`);
+      const key=c[5].toUpperCase().replace(/[.)]/g,"").trim();
+      const correct={A:0,B:1,C:2,D:3}[key];
+      if(correct===undefined) throw new Error(`Fila ${idx+1}: la correcta debe ser A, B, C o D.`);
+      if(c.slice(0,5).some(x=>!x)) throw new Error(`Fila ${idx+1}: hay campos vacíos.`);
+      return [`Pregunta ${idx+1}`,c[0],[c[1],c[2],c[3],c[4]],correct];
+    });
+
+    if(parsed.length>100) throw new Error("Máximo 100 preguntas.");
+    Q=parsed;selectedQuestions=null;
+
+    const active=banks.find(x=>x.id===currentBankId);
+    await setDoc(bankRef(currentBankId),{
+      name:active?.name||currentBankId,
+      questions:questionsToFirestore(Q),
+      updatedAt:serverTimestamp()
+    },{merge:true});
+
+    await setDoc(roomRef(),{
+      questions:questionsToFirestore(Q),
+      bankId:currentBankId,
+      questionIndex:0,
+      status:"lobby",
+      openedAt:0,
+      selectedQuestions:null,
+      updatedAt:serverTimestamp()
+    },{merge:true});
+
+    renderQuestionAdmin();
+    renderHost();
+    msg.textContent=`✓ ${Q.length} preguntas importadas y guardadas.`;
+  }catch(e){
+    console.error(e);
+    msg.textContent="ERROR: "+(e?.message||String(e));
+  }
+};
+
+function escapeHtml(s){let d=document.createElement("div");d.textContent=s||"";return d.innerHTML}
+setTimeout(async()=>{
+ show('home');
+ const s=loadSession();
+ if(s&&(!inviteRunId||s.room===inviteRunId)){$("resumeQuiz").classList.remove('hidden');$("playerName").value=String(s.playerName||'').startsWith('Cédula ••••')?'':s.playerName||'';}
+ if(inviteRunId){
+  $("homeMsg").textContent='Tienes una invitación. Entra al quiz para comenzar.';$("roomCodeField").classList.add('hidden');$("roomCode").readOnly=true;
+  await loadJoinRoom();
+ }
+},0);
+</script>
+<div style="padding:25px;text-align:center;font:12px system-ui;color:#8c9ab0">© 2026 Laboratorio de Aprendizaje y Decisión. Todos los derechos reservados.</div></body></html>
